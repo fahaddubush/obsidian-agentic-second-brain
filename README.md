@@ -16,10 +16,58 @@
   and Codex, Claude Code, Gemini CLI, and future agents share one governed memory system.
 </p>
 
+<p align="center">
+  <a href="#the-idea">The idea</a> ·
+  <a href="#inside-the-vault">Vault structure</a> ·
+  <a href="#how-memory-compounds">Memory loop</a> ·
+  <a href="#codex-hook-integration">Automation</a> ·
+  <a href="#safety-model">Safety</a> ·
+  <a href="#quick-start">Quick start</a>
+</p>
+
 > [!IMPORTANT]
 > This repository is a public starter template. Create your working vault from it, then keep personal daily notes, job applications, transcripts, credentials, and private project memory in a **private repository**.
 
-## Why this exists
+## Inside the vault
+
+<table>
+  <tr>
+    <td width="25%" valign="top">
+      <strong>🧠 13 memory zones</strong><br><br>
+      Capture, working state, projects, evergreen knowledge, episodes, procedures, evidence, machine review, and archive.
+    </td>
+    <td width="25%" valign="top">
+      <strong>🧩 19 note templates</strong><br><br>
+      Daily notes, decisions, sources, project audits, sessions, context packs, briefs, synthesis, and reviews.
+    </td>
+    <td width="25%" valign="top">
+      <strong>⚙️ 24 workflows</strong><br><br>
+      Research, ingestion, architecture, debugging, Git review, study, job applications, dreaming, and maintenance.
+    </td>
+    <td width="25%" valign="top">
+      <strong>🤖 4 agent surfaces</strong><br><br>
+      Codex, Claude Code, Gemini CLI, and any future filesystem-capable agent share one canonical policy.
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="33%" align="center"><strong>0 runtime dependencies</strong><br><sub>Python standard library only</sub></td>
+    <td width="33%" align="center"><strong>15 regression tests</strong><br><sub>Windows and Linux CI</sub></td>
+    <td width="33%" align="center"><strong>6 lifecycle hooks</strong><br><sub>Explicitly reviewed and trusted</sub></td>
+  </tr>
+</table>
+
+## How memory compounds
+
+<p align="center">
+  <img src="assets/vault-architecture.svg" alt="The Agentic Second Brain compounding memory loop" width="100%" />
+</p>
+
+Human captures and immutable evidence enter through separate doors. Agents can organize, connect, summarize, and validate—but generated work remains visibly staged until a human promotes it. Short briefs then compress the reviewed memory into the smallest useful context for the next session.
+
+## The idea
 
 Most AI conversations disappear when the window closes. This vault turns useful outcomes into durable, linked, reviewable memory while keeping humans in control.
 
@@ -32,7 +80,7 @@ It combines:
 - A zero-dependency Python CLI for validation, scaffolding, integrity checks, and audits.
 - Templates and workflows for research, coding sessions, decisions, projects, sources, reviews, and synthesis.
 
-## The model
+### The relationship graph
 
 ```mermaid
 flowchart LR

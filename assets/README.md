@@ -13,3 +13,8 @@ Store public-facing, repository-native visual assets used by the root README and
 ## Writers
 
 Humans govern this folder. Contributors may update assets through reviewed changes.
+
+## Included visuals
+
+- `hero.svg`: repository and project identity banner.
+- `vault-architecture.svg`: public-facing explanation of the compounding memory loop.
