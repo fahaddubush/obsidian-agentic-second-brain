@@ -1,0 +1,86 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/codex_hook.py\" session-start",
+            "commandWindows": "powershell -NoProfile -Command \"python (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/codex_hook.py') session-start\"",
+            "timeout": 30,
+            "statusMessage": "Loading second-brain context"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/codex_hook.py\" subagent-start",
+            "commandWindows": "powershell -NoProfile -Command \"python (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/codex_hook.py') subagent-start\"",
+            "timeout": 15,
+            "statusMessage": "Loading subagent safety context"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/codex_hook.py\" user-prompt",
+            "commandWindows": "powershell -NoProfile -Command \"python (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/codex_hook.py') user-prompt\"",
+            "timeout": 15,
+            "statusMessage": "Routing second-brain workflow"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^(Bash|apply_patch|Edit|Write)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/codex_hook.py\" pre-tool",
+            "commandWindows": "powershell -NoProfile -Command \"python (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/codex_hook.py') pre-tool\"",
+            "timeout": 15,
+            "statusMessage": "Checking vault safety boundary"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^(Bash|apply_patch|Edit|Write)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/codex_hook.py\" post-tool",
+            "commandWindows": "powershell -NoProfile -Command \"python (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/codex_hook.py') post-tool\"",
+            "timeout": 15,
+            "statusMessage": "Recording validation requirement"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/codex_hook.py\" stop",
+            "commandWindows": "powershell -NoProfile -Command \"python (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/codex_hook.py') stop\"",
+            "timeout": 60,
+            "statusMessage": "Validating second brain"
+          }
+        ]
+      }
+    ]
+  }
+}

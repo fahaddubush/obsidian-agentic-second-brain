@@ -1,0 +1,65 @@
+# Operating-system and editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# Secrets and local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*credentials*
+*secrets*
+.obsidian-local-rest-api*
+
+# Temporary files, caches, and exports
+tmp/
+temp/
+.tmp/
+.cache/
+cache/
+__pycache__/
+.pytest_cache/
+*.tmp
+*.log
+exports/
+*.export.pdf
+
+# Large/local retrieval indexes and models
+embeddings/
+.embeddings/
+*.faiss
+*.sqlite
+*.sqlite3
+*.db
+models/
+
+# Obsidian device/plugin state; keep snippets tracked
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.obsidian/plugins/
+.obsidian/themes/
+
+# Local agent state
+.claude/settings.local.json
+.gemini/
+.agent-cache/
+
+# Track reviewed project-local Codex integration; ignore runtime hook state.
+.codex/*
+!.codex/README.md
+!.codex/config.toml
+!.codex/hooks.json
+!.codex/hooks/
+!.codex/hooks/**
+.codex/state/
+
+# Keep generated Python artifacts ignored after the .codex allow-list above.
+**/__pycache__/
+*.py[cod]

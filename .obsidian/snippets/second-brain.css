@@ -1,0 +1,150 @@
+/*
+ * Agentic Second Brain
+ * Optional presentation layer. Content remains Markdown-first and portable.
+ */
+
+:root {
+  --sb-radius: 14px;
+  --sb-gap: 0.85rem;
+  --sb-border: var(--background-modifier-border);
+  --sb-surface: var(--background-secondary);
+  --sb-accent-soft: color-mix(in srgb, var(--interactive-accent) 13%, transparent);
+}
+
+.markdown-preview-view.second-brain,
+.markdown-source-view.second-brain {
+  --h1-size: 2.15em;
+  --h2-size: 1.45em;
+}
+
+.markdown-preview-view.second-brain h2 {
+  border-bottom: 1px solid var(--sb-border);
+  padding-bottom: 0.28em;
+  margin-top: 1.8em;
+}
+
+.sb-hero {
+  border: 1px solid var(--sb-border);
+  border-left: 5px solid var(--interactive-accent);
+  border-radius: var(--sb-radius);
+  padding: clamp(1.1rem, 3vw, 2rem);
+  margin: 0.5rem 0 1.5rem;
+  background:
+    radial-gradient(circle at top right, var(--sb-accent-soft), transparent 48%),
+    var(--sb-surface);
+}
+
+.sb-hero h1 { margin: 0.2rem 0 0.45rem; line-height: 1.1; }
+.sb-hero p { color: var(--text-muted); font-size: 1.08em; margin-bottom: 0; max-width: 62ch; }
+.sb-kicker { color: var(--interactive-accent); font-size: 0.72em; font-weight: 750; letter-spacing: 0.12em; }
+
+.sb-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--sb-gap);
+  margin: 1rem 0;
+}
+
+.sb-card {
+  border: 1px solid var(--sb-border);
+  border-radius: var(--sb-radius);
+  background: var(--sb-surface);
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+
+.sb-card strong { color: var(--text-normal); display: inline-block; margin-bottom: 0.25rem; }
+
+.sb-banner {
+  --sb-banner-color: var(--interactive-accent);
+  border: 1px solid color-mix(in srgb, var(--sb-banner-color) 35%, var(--sb-border));
+  border-left: 4px solid var(--sb-banner-color);
+  border-radius: calc(var(--sb-radius) - 3px);
+  background: color-mix(in srgb, var(--sb-banner-color) 9%, var(--background-primary));
+  padding: 0.8rem 1rem;
+  margin: 0.8rem 0 1.2rem;
+}
+
+.sb-banner--blue { --sb-banner-color: var(--color-blue); }
+.sb-banner--green { --sb-banner-color: var(--color-green); }
+.sb-banner--amber { --sb-banner-color: var(--color-orange); }
+.sb-banner--red { --sb-banner-color: var(--color-red); }
+
+/* Semantic color accents used by templates and example notes. */
+.sb-daily { --sb-banner-color: var(--color-yellow); }
+.sb-working { --sb-banner-color: var(--color-cyan); }
+.sb-project { --sb-banner-color: var(--color-blue); }
+.sb-research { --sb-banner-color: var(--color-purple); }
+.sb-study { --sb-banner-color: var(--color-green); }
+.sb-career { --sb-banner-color: var(--color-orange); }
+.sb-infra { --sb-banner-color: var(--color-cyan); }
+.sb-source { --sb-banner-color: var(--color-green); }
+.sb-session { --sb-banner-color: var(--color-purple); }
+.sb-decision { --sb-banner-color: var(--color-orange); }
+.sb-audit { --sb-banner-color: var(--color-red); }
+.sb-dream { --sb-banner-color: var(--color-purple); }
+.sb-machine { --sb-banner-color: var(--color-purple); }
+.sb-meta { --sb-banner-color: var(--interactive-accent); }
+
+.sb-card[class*="sb-"],
+.sb-hero[class*="sb-"] {
+  border-left: 4px solid var(--sb-banner-color, var(--interactive-accent));
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--sb-banner-color, var(--interactive-accent)) 10%, transparent), transparent 52%),
+    var(--sb-surface);
+}
+
+.sb-brief {
+  --sb-banner-color: var(--interactive-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--sb-banner-color) 38%, var(--sb-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sb-banner-color) 10%, var(--background-primary));
+  color: var(--text-muted);
+  font-size: 0.72em;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  padding: 0.3rem 0.7rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.sb-brief::before {
+  content: "";
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 50%;
+  background: var(--sb-banner-color);
+  box-shadow: 0 0 0 0.18rem color-mix(in srgb, var(--sb-banner-color) 16%, transparent);
+}
+
+.sb-badge {
+  border: 1px solid var(--sb-border);
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.12rem 0.5rem;
+  vertical-align: 0.08em;
+}
+
+.sb-badge--human { color: var(--color-green); }
+.sb-badge--machine { color: var(--color-purple); }
+.sb-badge--review { color: var(--color-orange); }
+.markdown-preview-view.sb-dashboard table { width: 100%; }
+.markdown-preview-view.sb-dashboard .callout { border-radius: var(--sb-radius); }
+
+@media (max-width: 520px) {
+  .sb-hero { padding: 1rem; }
+  .sb-card-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-card, .sb-banner, .sb-hero { scroll-behavior: auto; transition: none; }
+}
+
+@media print {
+  .sb-card, .sb-banner, .sb-hero { background: transparent; box-shadow: none; }
+}
