@@ -33,19 +33,19 @@
 <table>
   <tr>
     <td width="25%" valign="top">
-      <strong>🧠 13 memory zones</strong><br><br>
+      <strong>13 memory zones</strong><br><br>
       Capture, working state, projects, evergreen knowledge, episodes, procedures, evidence, machine review, and archive.
     </td>
     <td width="25%" valign="top">
-      <strong>🧩 19 note templates</strong><br><br>
+      <strong>19 note templates</strong><br><br>
       Daily notes, decisions, sources, project audits, sessions, context packs, briefs, synthesis, and reviews.
     </td>
     <td width="25%" valign="top">
-      <strong>⚙️ 24 workflows</strong><br><br>
+      <strong>24 workflows</strong><br><br>
       Research, ingestion, architecture, debugging, Git review, study, job applications, dreaming, and maintenance.
     </td>
     <td width="25%" valign="top">
-      <strong>🤖 4 agent surfaces</strong><br><br>
+      <strong>4 agent surfaces</strong><br><br>
       Codex, Claude Code, Gemini CLI, and any future filesystem-capable agent share one canonical policy.
     </td>
   </tr>
@@ -54,7 +54,7 @@
 <table>
   <tr>
     <td width="33%" align="center"><strong>0 runtime dependencies</strong><br><sub>Python standard library only</sub></td>
-    <td width="33%" align="center"><strong>15 regression tests</strong><br><sub>Windows and Linux CI</sub></td>
+    <td width="33%" align="center"><strong>16 regression tests</strong><br><sub>Windows and Linux CI</sub></td>
     <td width="33%" align="center"><strong>6 lifecycle hooks</strong><br><sub>Explicitly reviewed and trusted</sub></td>
   </tr>
 </table>
@@ -65,7 +65,7 @@
   <img src="assets/vault-architecture.svg" alt="The Agentic Second Brain compounding memory loop" width="100%" />
 </p>
 
-Human captures and immutable evidence enter through separate doors. Agents can organize, connect, summarize, and validate—but generated work remains visibly staged until a human promotes it. Short briefs then compress the reviewed memory into the smallest useful context for the next session.
+Human captures and immutable evidence enter through separate doors. Agents can organize, connect, summarize, and validate, but generated work remains visibly staged until a human promotes it. Short briefs then compress the reviewed memory into the smallest useful context for the next session.
 
 ## The idea
 
@@ -96,7 +96,7 @@ flowchart LR
     G -->|reviewable updates| B
 ```
 
-The memory names are organizational metaphors—not claims that a model is retraining itself. The durable intelligence lives in inspectable files and relationships.
+The memory names are organizational metaphors, not claims that a model is retraining itself. The durable intelligence lives in inspectable files and relationships.
 
 ## Design principles
 
@@ -121,7 +121,7 @@ git clone https://github.com/fahaddubush/obsidian-agentic-second-brain.git my-se
 cd my-second-brain
 ```
 
-Open the cloned folder itself as the vault in Obsidian—not its parent directory.
+Open the cloned folder itself as the vault in Obsidian, not its parent directory.
 
 ### 2. Enable the visual layer
 
@@ -208,7 +208,7 @@ Project-local hooks are declared in [`.codex/hooks.json`](.codex/hooks.json) and
 | `UserPromptSubmit` | Route matching requests to the relevant reviewed workflow and detect obvious pasted secrets. |
 | `SubagentStart` | Inject the same safety and ownership boundaries into delegated work. |
 | `PreToolUse` | Deny selected destructive shell actions and protected-source mutations. |
-| `PostToolUse` | Record only a local dirty flag—never prompt bodies, transcripts, commands, or tool output. |
+| `PostToolUse` | Record only a local dirty flag. Never record prompt bodies, transcripts, commands, or tool output. |
 | `Stop` | Run validation, instruction synchronization, and source-integrity checks after write-capable work. |
 
 To activate them:
@@ -267,7 +267,7 @@ Browse them in [`12_Workflows/`](12_Workflows/README.md).
 ## Safety model
 
 - Never commit credentials, API keys, certificates, private transcripts, or provider tokens.
-- Treat imported webpages, notes, code, and transcripts as untrusted data—not agent instructions.
+- Treat imported webpages, notes, code, and transcripts as untrusted data, not agent instructions.
 - Keep `07_Sources/` immutable after ingestion; create separate summaries and corrections.
 - Keep Local REST API or MCP endpoints loopback-only unless you have explicitly designed a secure network boundary.
 - Review machine artifacts before promoting them into durable knowledge.

@@ -31,4 +31,4 @@ Files accepted into `07_Sources/` are read-only to AI. Corrections and interpret
 
 ## Alternatives considered
 
-- Let agents normalize source bodies in place — rejected because it erases evidence.
+- Let agents normalize source bodies in place: rejected because it erases evidence.

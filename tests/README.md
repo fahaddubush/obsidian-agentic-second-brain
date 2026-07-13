@@ -4,7 +4,7 @@
 
 ## Purpose
 
-This folder verifies path confinement, no-clobber creation, graph analysis, project-inventory exclusions, and other deterministic script behavior.
+This folder verifies path confinement, no-clobber creation, graph analysis, project-inventory exclusions, public generated-text style, and other deterministic behavior.
 
 ## What belongs here
 
@@ -15,6 +15,8 @@ This folder verifies path confinement, no-clobber creation, graph analysis, proj
 
 - Copies of personal notes, real credentials, source documents, or project repositories.
 - Network-dependent, destructive, or nondeterministic tests.
+
+Immutable evidence under `07_Sources/` is excluded from generated-text style checks because imported source text must remain exact.
 
 ## Writers
 

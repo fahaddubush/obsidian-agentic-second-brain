@@ -44,7 +44,7 @@ Identify and explain potentially incompatible claims while minimizing false posi
 3. Test for temporal change, different environments, definitions, units, authority levels, or fact-versus-opinion.
 4. Classify as direct contradiction, possible tension, supersession candidate, compatible, or insufficient evidence.
 5. Create one report per meaningful conflict using the contradiction template.
-6. Suggest clarifying language, source verification, or a decision note—never an automatic rewrite.
+6. Suggest clarifying language, source verification, or a decision note. Never rewrite automatically.
 7. Link related reports and mark whether resolution would affect context packs or project memory.
 
 ## Agent prompts

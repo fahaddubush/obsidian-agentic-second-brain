@@ -29,7 +29,7 @@ Assess a calendar month across projects and areas, promote mature learning, and 
 - Optional synthesis, contradiction, or maintenance reports under `08_Machine/`.
 
 ## Allowed folders
-- Read: relevant dated notes across `01_Daily/`–`08_Machine/` and policies in `10_Meta/`.
+- Read: relevant dated notes from `01_Daily/` through `08_Machine/` and policies in `10_Meta/`.
 - Write: new timeline and machine notes; no changes to human/project state without approval.
 
 ## Forbidden actions

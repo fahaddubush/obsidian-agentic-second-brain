@@ -28,7 +28,7 @@ unknown
 
 ## Tasks, stale files, mock/dead code, missing docs
 
-unknown — these require evidence from a real codebase.
+unknown. These require evidence from a real codebase.
 
 ## Findings
 

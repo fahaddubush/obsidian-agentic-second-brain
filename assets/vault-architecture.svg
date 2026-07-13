@@ -99,7 +99,7 @@
     </g>
 
     <path d="M1190 418C1190 505 1110 520 1030 520H240C140 520 100 490 100 420" fill="none" stroke="url(#flow)" stroke-width="4" stroke-dasharray="10 9" marker-end="url(#arrow)"/>
-    <text x="640" y="548" fill="#d8d7ed" font-size="15" text-anchor="middle">Agents return reviewed outcomes to working memory—never silently to human truth.</text>
+    <text x="640" y="548" fill="#d8d7ed" font-size="15" text-anchor="middle">Agents return reviewed outcomes to working memory, never silently to human truth.</text>
 
     <g transform="translate(60 585)">
       <rect width="1160" height="82" rx="18" fill="#ffffff" opacity="0.055" stroke="#ffffff" stroke-opacity="0.15"/>

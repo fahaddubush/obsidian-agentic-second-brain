@@ -27,7 +27,7 @@ The project-local integration under `.codex/` matches the current Codex hook sch
 ## Evidence
 
 - `python scripts/sb.py validate`: 0 errors, 0 warnings.
-- `python -m unittest discover -s tests -v`: 15 tests passed.
+- `python -m unittest discover -s tests -v`: 16 tests passed.
 - `python scripts/sb.py instruction-sync`: adapters match the canonical hash.
 - `python scripts/sb.py sources`: 0 changed, 0 added, 0 missing.
 - `.codex/hooks.json`: valid JSON and current event/matcher names.

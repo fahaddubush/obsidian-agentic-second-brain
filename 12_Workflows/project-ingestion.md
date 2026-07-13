@@ -49,7 +49,7 @@ Build a traceable project-memory package from a codebase or project folder witho
 6. Extract explicit goals/tasks and compare docs with code. Mark discrepancies and missing docs.
 7. Identify stale, fake/mock, dead-code, or inconsistency candidates using references/history/tests where available; preserve uncertainty.
 8. Create or propose the project memory set: `context.md`, `architecture.md`, `goals.md`, `tasks.md`, `decisions.md`, `bugs.md`, `changelog.md`, `lessons-learned.md`, and `ingestion-log.md`.
-9. Produce a machine audit with severity, evidence, confidence, impact, and suggested verification—never unsupported accusations.
+9. Produce a machine audit with severity, evidence, confidence, impact, and suggested verification. Never make unsupported accusations.
 10. Create a context pack and minimal future-chat brief linked to full notes and exact revision.
 11. Verify the source project is unchanged and present all vault changes for human review.
 
