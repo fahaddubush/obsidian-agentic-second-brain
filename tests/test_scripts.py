@@ -16,6 +16,8 @@ from vaultlib import atomic_create, confined, sha256, vault_root  # noqa: E402
 
 class VaultHelpersTest(unittest.TestCase):
     def test_runtime_directories_do_not_require_readmes(self) -> None:
+        self.assertFalse(sb.readme_required(Path(".github")))
+        self.assertFalse(sb.readme_required(Path(".github/workflows")))
         self.assertFalse(sb.readme_required(Path(".obsidian/themes/Retroma")))
         self.assertFalse(sb.readme_required(Path(".obsidian/plugins/example")))
         self.assertFalse(sb.readme_required(Path(".codex/state")))

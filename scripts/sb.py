@@ -45,6 +45,7 @@ MACHINE_FIELDS = {"generated_by", "confidence", "human_review_required"}
 ADAPTERS = ("AGENTS.md", "CLAUDE.md", "GEMINI.md")
 RUNTIME_README_EXCLUSIONS = (
     (".git",),
+    (".github",),
     (".obsidian", "cache"),
     (".obsidian", "plugins"),
     (".obsidian", "themes"),
