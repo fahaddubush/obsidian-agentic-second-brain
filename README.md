@@ -20,6 +20,7 @@
   <a href="#the-idea">The idea</a> ·
   <a href="#inside-the-vault">Vault structure</a> ·
   <a href="#how-memory-compounds">Memory loop</a> ·
+  <a href="#memory-types-and-their-purpose">Memory types</a> ·
   <a href="#codex-hook-integration">Automation</a> ·
   <a href="#safety-model">Safety</a> ·
   <a href="#quick-start">Quick start</a>
@@ -66,6 +67,25 @@
 </p>
 
 Human captures and immutable evidence enter through separate doors. Agents can organize, connect, summarize, and validate, but generated work remains visibly staged until a human promotes it. Short briefs then compress the reviewed memory into the smallest useful context for the next session.
+
+## Memory types and their purpose
+
+| Memory type | Purpose | Use it for | Location |
+|---|---|---|---|
+| Inbox memory | Hold unprocessed captures until they can be reviewed and routed. | Quick ideas, links, questions, meeting fragments, and temporary notes. | `00_Inbox/` |
+| Daily memory | Preserve the human view of a specific day. | Focus, schedule, observations, wins, open loops, and shutdown reflection. | `01_Daily/` |
+| Working memory | Keep only the context needed for active work. | Current goals, tasks, blockers, pending decisions, and the next action. | `02_Working-Memory/` |
+| Project memory | Maintain durable state for each real project. | Goals, architecture, decisions, tasks, bugs, changelogs, audits, and lessons. | `03_Projects/` |
+| Semantic memory | Store reusable knowledge that remains useful across projects and dates. | Concepts, explanations, patterns, comparisons, definitions, and linked ideas. | `04_Knowledge/` |
+| Episodic memory | Record what happened and why at a particular time. | Agent sessions, work sessions, decisions, events, outcomes, and historical context. | `05_Episodic-Memory/` |
+| Procedural memory | Preserve repeatable methods that can be followed again. | Checklists, operating procedures, setup guides, troubleshooting, and proven routines. | `06_Procedural-Memory/` |
+| Source memory | Keep the original evidence behind claims and conclusions. | Articles, books, PDFs, transcripts, codebases, videos, and captured web material. | `07_Sources/` |
+| Machine memory | Stage generated analysis separately from accepted knowledge. | Summaries, audits, link suggestions, contradictions, synthesis, and review reports. | `08_Machine/` |
+| Archive memory | Retain inactive or superseded material without keeping it in active context. | Completed projects, retired procedures, old working notes, and preserved history. | `09_Archive/` |
+| Context packs | Assemble the smallest coherent bundle for a topic or project. | Starting a new agent session without rereading the entire vault. | `08_Machine/Context-Packs/` |
+| Token-saving briefs | Point an agent to the few files and facts needed for immediate continuation. | Fast startup, handoffs, debugging continuation, research continuation, and focused reviews. | `08_Machine/Token-Saving-Briefs/` |
+
+These categories organize files and retrieval. They do not represent separate cognitive systems inside a model.
 
 ## The idea
 
