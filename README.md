@@ -55,7 +55,7 @@
 <table>
   <tr>
     <td width="33%" align="center"><strong>0 runtime dependencies</strong><br><sub>Python standard library only</sub></td>
-    <td width="33%" align="center"><strong>25 regression tests</strong><br><sub>Windows and Linux CI</sub></td>
+    <td width="33%" align="center"><strong>26 regression tests</strong><br><sub>Windows and Linux CI</sub></td>
     <td width="33%" align="center"><strong>9 lifecycle event types</strong><br><sub>Explicitly reviewed and trusted</sub></td>
   </tr>
 </table>

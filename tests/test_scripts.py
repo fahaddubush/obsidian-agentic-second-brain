@@ -60,6 +60,19 @@ class CommandsTest(unittest.TestCase):
             args = argparse.Namespace(vault=str(root), write=False)
             self.assertEqual(sb.command_sources(args), 1)
 
+    def test_public_source_example_is_used_without_private_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "07_Sources" / "Articles" / "example.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("public example", encoding="utf-8")
+            example = root / "08_Machine" / "Reports" / "source-integrity.example.json"
+            example.parent.mkdir(parents=True)
+            relative = source.relative_to(root).as_posix()
+            example.write_text(json.dumps({"files": {relative: sb.sha256(source)}}), encoding="utf-8")
+            args = argparse.Namespace(vault=str(root), write=False)
+            self.assertEqual(sb.command_sources(args), 0)
+
     def test_private_runtime_is_idempotent_and_claims_jobs(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             database = Path(directory) / "brain.db"

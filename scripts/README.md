@@ -75,7 +75,7 @@ The trusted prompt hook routes this request to the ingestion and session workflo
 
 Before reporting completion, create the JSON manifest from `11_Templates/ingestion-manifest.json` and require `ingestion-audit` to pass with zero errors.
 
-All create commands refuse to overwrite existing output. `instruction-sync --write` changes only adapter hash sentinels. `sources --write` changes only the ignored local manifest at `.codex/state/source-integrity.json`; the public repository contains only `08_Machine/Reports/source-integrity.example.json`. Hook evidence and queue state live outside the repository at `~/.codex/second-brain/brain.db`. The reviewed recurring worker follows [[../12_Workflows/agentic-memory-reconciliation]] and never rewrites protected human or source notes.
+All create commands refuse to overwrite existing output. `instruction-sync --write` changes only adapter hash sentinels. `sources --write` changes only the ignored local manifest at `.codex/state/source-integrity.json`. A clean public checkout validates against `08_Machine/Reports/source-integrity.example.json` until a private manifest is created. Hook evidence and queue state live outside the repository at `~/.codex/second-brain/brain.db`. The reviewed recurring worker follows [[../12_Workflows/agentic-memory-reconciliation]] and never rewrites protected human or source notes.
 
 ## Validation
 

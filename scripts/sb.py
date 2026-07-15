@@ -303,6 +303,7 @@ def source_hashes(root: Path) -> dict[str, str]:
 def command_sources(args: argparse.Namespace) -> int:
     root = vault_root(args.vault)
     manifest_path = confined(root, ".codex/state/source-integrity.json")
+    example_path = confined(root, "08_Machine/Reports/source-integrity.example.json")
     current = source_hashes(root)
     if args.write:
         content = json.dumps({"generated_at": iso_now(), "algorithm": "sha256", "files": current}, indent=2) + "\n"
@@ -312,10 +313,11 @@ def command_sources(args: argparse.Namespace) -> int:
             atomic_create(root, manifest_path.relative_to(root), content)
         print(f"Wrote {manifest_path.relative_to(root).as_posix()} ({len(current)} source files).")
         return 0
-    if not manifest_path.exists():
+    read_path = manifest_path if manifest_path.exists() else example_path
+    if not read_path.exists():
         print("No manifest. Run `sources --write` after accepting raw sources.")
         return 1
-    expected = json.loads(manifest_path.read_text(encoding="utf-8")).get("files", {})
+    expected = json.loads(read_path.read_text(encoding="utf-8")).get("files", {})
     changed = sorted(key for key in set(expected) & set(current) if expected[key] != current[key])
     added = sorted(set(current) - set(expected))
     missing = sorted(set(expected) - set(current))
@@ -451,6 +453,7 @@ def contains_emoji_or_long_dash(text: str) -> bool:
 
 def ingestion_findings(root: Path, manifest: dict[str, object]) -> dict[str, list[str]]:
     """Check a full ingestion package against its declared source manifest."""
+    root = root.resolve()
     errors: list[str] = []
     warnings: list[str] = []
     projects = manifest.get("projects")
