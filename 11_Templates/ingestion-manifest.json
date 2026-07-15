@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "generated_at": "YYYY-MM-DDTHH:MM:SS+00:00",
+  "privacy": "local-only",
+  "expected_task_count": 0,
+  "expected_turn_count": 0,
+  "source_catalog": "07_Sources/Transcripts/YYYY-MM-DD - Codex Task Catalog.md",
+  "working_memory": "02_Working-Memory/YYYY-MM-DD - Ingestion Working Memory.md",
+  "procedure": "06_Procedural-Memory/Codex Task History Ingestion.md",
+  "ingestion_report": "08_Machine/Reports/YYYY-MM-DD - Codex Task History Ingestion.md",
+  "private_index": "05_Episodic-Memory/LLM-Sessions/private-index.md",
+  "projects": [
+    {
+      "name": "Project name",
+      "memory_dir": "03_Projects/Project name",
+      "slug": "project-name",
+      "tasks": [
+        {
+          "id": "task-id",
+          "title": "Task title",
+          "turns": 1,
+          "status": "completed-or-incomplete",
+          "session_note": "05_Episodic-Memory/LLM-Sessions/Codex/YYYY/YYYY-MM-DD - Title.md"
+        }
+      ]
+    }
+  ]
+}

@@ -43,6 +43,26 @@ REQUIRED_FILES = [
 ]
 MACHINE_FIELDS = {"generated_by", "confidence", "human_review_required"}
 ADAPTERS = ("AGENTS.md", "CLAUDE.md", "GEMINI.md")
+PROJECT_MEMORY_FILES = (
+    "README.md", "context.md", "goals.md", "architecture.md", "decisions.md",
+    "tasks.md", "bugs.md", "changelog.md", "lessons-learned.md",
+    "ingestion-log.md", "audits/README.md", "machine-summaries/README.md",
+)
+SESSION_FIELDS = {
+    "type", "title", "status", "generated_by", "confidence",
+    "human_review_required", "agent", "project", "session_id",
+}
+PLACEHOLDER_PATTERNS = (
+    re.compile(r"(?m)^\s*-\s*$"),
+    re.compile(r"(?mi)^\s*(unknown|todo|tbd|placeholder)\s*$"),
+    re.compile(r"(?mi)^\s*-\s*\[\s\]\s*(unknown|todo|tbd)?\s*$"),
+)
+SECRET_SCAN_PATTERNS = (
+    re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    re.compile(r"(?i)(?:api[_ -]?key|token|secret)\s*[:=]\s*[A-Za-z0-9._-]{20,}"),
+)
 RUNTIME_README_EXCLUSIONS = (
     (".git",),
     (".github",),
@@ -125,6 +145,10 @@ def command_validate(args: argparse.Namespace) -> int:
             # A workflow and its note template intentionally share a task name.
             # All vault links to these files should use their full folder path.
             if roots == {"11_Templates", "12_Workflows"}:
+                continue
+            # Standard project-memory filenames repeat safely because project
+            # links use full paths rather than bare stems.
+            if roots == {"03_Projects"}:
                 continue
             warnings.append(
                 f"ambiguous title '{stem}': " + ", ".join(p.relative_to(root).as_posix() for p in paths)
@@ -278,7 +302,7 @@ def source_hashes(root: Path) -> dict[str, str]:
 
 def command_sources(args: argparse.Namespace) -> int:
     root = vault_root(args.vault)
-    manifest_path = confined(root, "08_Machine/Reports/source-integrity.json")
+    manifest_path = confined(root, ".codex/state/source-integrity.json")
     current = source_hashes(root)
     if args.write:
         content = json.dumps({"generated_at": iso_now(), "algorithm": "sha256", "files": current}, indent=2) + "\n"
@@ -299,7 +323,7 @@ def command_sources(args: argparse.Namespace) -> int:
         for value in values:
             print(f"{label}: {value}")
     print(f"Result: {len(changed)} changed, {len(added)} added, {len(missing)} missing.")
-    return 1 if changed or missing else 0
+    return 1 if changed or added or missing else 0
 
 
 STACK_MARKERS = {
@@ -386,6 +410,268 @@ def command_git_diff(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_maintenance(args: argparse.Namespace) -> int:
+    """Run the safe deterministic maintenance pipeline in one command."""
+    root = vault_root(args.vault)
+    print("[1/4] Create missing daily scaffolds")
+    daily_code = command_daily(argparse.Namespace(vault=str(root), date=args.date, missing_only=True))
+    print("[2/4] Check canonical instruction synchronization")
+    sync_code = command_sync(argparse.Namespace(vault=str(root), write=False))
+    print("[3/4] Check immutable source integrity")
+    source_code = command_sources(argparse.Namespace(vault=str(root), write=args.refresh_sources))
+    print("[4/4] Validate vault structure and links")
+    validate_code = command_validate(argparse.Namespace(vault=str(root), json=False))
+    if any((daily_code, sync_code, source_code, validate_code)):
+        print("Maintenance completed with findings that require review.")
+        return 1
+    print("Maintenance completed successfully.")
+    return 0
+
+
+def empty_level_two_headings(text: str) -> list[str]:
+    """Return level-two headings with no prose, list, or subsection content."""
+    matches = list(re.finditer(r"(?m)^##\s+(.+?)\s*$", text))
+    empty: list[str] = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        body = text[match.end():end].strip()
+        if not body:
+            empty.append(match.group(1).strip())
+    return empty
+
+
+def contains_emoji_or_long_dash(text: str) -> bool:
+    if chr(0x2014) in text or chr(0x2013) in text:
+        return True
+    return any(
+        0x1F300 <= ord(char) <= 0x1FAFF or 0x2600 <= ord(char) <= 0x27BF
+        for char in text
+    )
+
+
+def ingestion_findings(root: Path, manifest: dict[str, object]) -> dict[str, list[str]]:
+    """Check a full ingestion package against its declared source manifest."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    projects = manifest.get("projects")
+    if not isinstance(projects, list) or not projects:
+        return {"errors": ["manifest projects must be a non-empty list"], "warnings": []}
+
+    declared_tasks = 0
+    declared_turns = 0
+    session_paths: list[Path] = []
+    task_ids: list[str] = []
+    task_turns: list[int] = []
+    generated_paths: set[Path] = set()
+    for project in projects:
+        if not isinstance(project, dict):
+            errors.append("manifest project entry is not an object")
+            continue
+        name = str(project.get("name") or "").strip()
+        memory_dir = str(project.get("memory_dir") or "").strip()
+        slug = str(project.get("slug") or "").strip()
+        tasks = project.get("tasks")
+        if not name or not memory_dir or not slug:
+            errors.append(f"project entry lacks name, memory_dir, or slug: {project}")
+            continue
+        project_root = confined(root, memory_dir)
+        for relative in PROJECT_MEMORY_FILES:
+            path = project_root / relative
+            if not path.is_file():
+                errors.append(f"{name}: missing project memory file {relative}")
+            else:
+                generated_paths.add(path)
+        for relative in (f"08_Machine/Context-Packs/{slug}.md", f"08_Machine/Token-Saving-Briefs/{slug}-continuation.md"):
+            path = confined(root, relative)
+            if not path.is_file():
+                errors.append(f"{name}: missing compressed memory {relative}")
+            else:
+                generated_paths.add(path)
+        if not isinstance(tasks, list) or not tasks:
+            errors.append(f"{name}: manifest tasks must be a non-empty list")
+            continue
+        for task in tasks:
+            if not isinstance(task, dict):
+                errors.append(f"{name}: task entry is not an object")
+                continue
+            task_id = str(task.get("id") or "").strip()
+            turns = task.get("turns")
+            session_note = str(task.get("session_note") or "").strip()
+            if not task_id or not isinstance(turns, int) or turns < 1 or not session_note:
+                errors.append(f"{name}: task lacks id, positive turns, or session_note")
+                continue
+            declared_tasks += 1
+            declared_turns += turns
+            task_ids.append(task_id)
+            task_turns.append(turns)
+            session_path = confined(root, session_note)
+            session_paths.append(session_path)
+            generated_paths.add(session_path)
+            if not session_path.is_file():
+                errors.append(f"{name}: missing session note for {task_id}: {session_note}")
+                continue
+            text = session_path.read_text(encoding="utf-8")
+            missing = SESSION_FIELDS - frontmatter_keys(session_path)
+            if missing:
+                errors.append(f"{session_note}: missing session metadata {sorted(missing)}")
+            if task_id not in text:
+                errors.append(f"{session_note}: does not contain declared task id {task_id}")
+            if not re.search(r"(?mi)^##\s+.*outcome.*$", text):
+                errors.append(f"{session_note}: lacks an explicit outcome section")
+
+    if manifest.get("expected_task_count") != declared_tasks:
+        errors.append(
+            f"task reconciliation failed: expected {manifest.get('expected_task_count')}, declared {declared_tasks}"
+        )
+    if manifest.get("expected_turn_count") != declared_turns:
+        errors.append(
+            f"turn reconciliation failed: expected {manifest.get('expected_turn_count')}, declared {declared_turns}"
+        )
+
+    declared_outputs: dict[str, Path] = {}
+    for key in ("source_catalog", "working_memory", "procedure", "ingestion_report", "private_index"):
+        relative = str(manifest.get(key) or "").strip()
+        if not relative:
+            errors.append(f"manifest lacks {key}")
+            continue
+        path = confined(root, relative)
+        if not path.is_file():
+            errors.append(f"missing declared output {relative}")
+        else:
+            generated_paths.add(path)
+            declared_outputs[key] = path
+
+    catalog_text = declared_outputs.get("source_catalog", Path()).read_text(encoding="utf-8") if "source_catalog" in declared_outputs else ""
+    index_text = declared_outputs.get("private_index", Path()).read_text(encoding="utf-8") if "private_index" in declared_outputs else ""
+    if len(set(task_ids)) != len(task_ids):
+        errors.append("manifest contains duplicate task IDs")
+    for task_id, turns, session_path in zip(task_ids, task_turns, session_paths):
+        if task_id not in catalog_text:
+            errors.append(f"source catalog lacks task id {task_id}")
+        catalog_row = re.search(rf"(?m)^\|.*`{re.escape(task_id)}`.*\|\s*{turns}\s*\|\s*$", catalog_text)
+        if not catalog_row:
+            errors.append(f"source catalog lacks exact turn count {turns} for {task_id}")
+        if session_path.stem not in index_text:
+            errors.append(f"private session index lacks {session_path.stem}")
+    if "ingestion_report" in declared_outputs:
+        report_text = declared_outputs["ingestion_report"].read_text(encoding="utf-8")
+        for expected in (str(declared_tasks), str(declared_turns)):
+            if expected not in report_text:
+                errors.append(f"ingestion report does not contain reconciled count {expected}")
+
+    for path in sorted(generated_paths):
+        if not path.is_file() or path.suffix.casefold() != ".md":
+            continue
+        relative = path.relative_to(root).as_posix()
+        text = path.read_text(encoding="utf-8")
+        for heading in empty_level_two_headings(text):
+            errors.append(f"{relative}: empty section {heading}")
+        if any(pattern.search(text) for pattern in PLACEHOLDER_PATTERNS):
+            errors.append(f"{relative}: contains placeholder content")
+        if any(pattern.search(text) for pattern in SECRET_SCAN_PATTERNS):
+            errors.append(f"{relative}: contains secret-like content")
+        if contains_emoji_or_long_dash(text):
+            errors.append(f"{relative}: contains an emoji or long dash")
+        if relative.startswith("03_Projects/") and path.name not in {"README.md"} and "audits/" not in relative and "machine-summaries/" not in relative:
+            if "## Evidence" not in text or "[[" not in text:
+                errors.append(f"{relative}: project memory lacks linked evidence")
+        if relative.startswith("08_Machine/Context-Packs/"):
+            required = ("## Purpose", "## Compressed summary", "## Next action", "## Expansion")
+            if any(heading not in text for heading in required) or "[[" not in text:
+                errors.append(f"{relative}: context pack lacks required structure or expansion links")
+        if relative.startswith("08_Machine/Token-Saving-Briefs/"):
+            required = ("## Objective", "## Essential state", "## Expand only if needed")
+            if any(heading not in text for heading in required) or "[[" not in text:
+                errors.append(f"{relative}: continuation brief lacks required structure or expansion links")
+
+    if str(manifest.get("privacy") or "").casefold() == "local-only" and (root / ".git").is_dir():
+        relative_paths = sorted(path.relative_to(root).as_posix() for path in generated_paths if path.exists())
+        result = subprocess.run(
+            ["git", "check-ignore", "--no-index", "--stdin", "-z"],
+            cwd=root,
+            input="\0".join(relative_paths) + "\0",
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+        ignored = {line.replace("\\", "/") for line in result.stdout.split("\0") if line}
+        for relative in relative_paths:
+            if relative not in ignored:
+                errors.append(f"local-only output is not ignored by Git: {relative}")
+
+    if len(set(session_paths)) != len(session_paths):
+        warnings.append("multiple manifest tasks map to the same episodic note")
+    return {"errors": errors, "warnings": warnings}
+
+
+def command_ingestion_audit(args: argparse.Namespace) -> int:
+    root = vault_root(args.vault)
+    manifest_path = confined(root, args.manifest)
+    if not manifest_path.is_file():
+        raise ValueError(f"Ingestion manifest does not exist: {manifest_path}")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ValueError("Ingestion manifest root must be an object")
+    findings = ingestion_findings(root, manifest)
+    payload = {"manifest": manifest_path.relative_to(root).as_posix(), **findings}
+    if args.json:
+        print(json.dumps(payload, indent=2))
+    else:
+        print(f"Manifest: {payload['manifest']}")
+        for item in findings["errors"]:
+            print(f"ERROR: {item}")
+        for item in findings["warnings"]:
+            print(f"WARN: {item}")
+        print(f"Result: {len(findings['errors'])} error(s), {len(findings['warnings'])} warning(s)")
+    return 1 if findings["errors"] else 0
+
+
+def command_hooks_check(args: argparse.Namespace) -> int:
+    root = vault_root(args.vault)
+    project_root = Path(args.project_root).expanduser().resolve() if args.project_root else root
+    codex_dir = project_root / ".codex"
+    config_path = codex_dir / "config.toml"
+    hooks_path = codex_dir / "hooks.json"
+    errors: list[str] = []
+    if not config_path.is_file():
+        errors.append(f"missing {config_path}")
+    else:
+        config = config_path.read_text(encoding="utf-8")
+        if not re.search(r"(?ms)^\[features\].*?^hooks\s*=\s*true\s*$", config):
+            errors.append(f"{config_path}: [features] hooks = true is missing")
+    if not hooks_path.is_file():
+        errors.append(f"missing {hooks_path}")
+        hooks: dict[str, object] = {}
+    else:
+        value = json.loads(hooks_path.read_text(encoding="utf-8"))
+        hooks = value.get("hooks", {}) if isinstance(value, dict) else {}
+        if not isinstance(hooks, dict):
+            errors.append(f"{hooks_path}: hooks must be an object")
+            hooks = {}
+    required_events = {"SessionStart", "UserPromptSubmit", "PostToolUse", "Stop"}
+    missing_events = sorted(required_events - set(hooks))
+    if missing_events:
+        errors.append(f"{hooks_path}: missing events {missing_events}")
+    handler = root / ".codex" / "hooks" / "codex_hook.py"
+    if not handler.is_file():
+        errors.append(f"missing reviewed handler {handler}")
+
+    print(f"Vault root: {root}")
+    print(f"Codex project root checked: {project_root}")
+    print(f"Hook config: {hooks_path}")
+    for item in errors:
+        print(f"ERROR: {item}")
+    if errors:
+        print("Hooks are not ready for this project root.")
+        return 1
+    print(f"Hook events found: {', '.join(sorted(hooks))}")
+    if "PreToolUse" not in hooks:
+        print("Note: this adapter omits the vault-only pre-tool guard. Open the vault itself as the Codex project for the full guard set.")
+    print("Hook files are ready. Restart Codex or create a new task from this exact project root, then review and trust the hooks in Settings.")
+    return 0
+
+
 def parser() -> argparse.ArgumentParser:
     root_parser = argparse.ArgumentParser(description=__doc__)
     root_parser.add_argument("--vault", help="Vault root (defaults to the parent of scripts/)")
@@ -433,6 +719,30 @@ def parser() -> argparse.ArgumentParser:
     diff.add_argument("--name")
     diff.add_argument("--base", default="HEAD", help="Git revision to compare (default: HEAD)")
     diff.set_defaults(func=command_git_diff)
+
+    maintenance = sub.add_parser(
+        "maintenance",
+        help="Run daily scaffolding, instruction checks, source integrity, and validation",
+    )
+    maintenance.add_argument("--date", help="ISO date for daily scaffolds")
+    maintenance.add_argument(
+        "--refresh-sources",
+        action="store_true",
+        help="Refresh the source manifest after explicitly accepting new immutable sources",
+    )
+    maintenance.set_defaults(func=command_maintenance)
+
+    ingestion_audit = sub.add_parser(
+        "ingestion-audit",
+        help="Validate a full ingestion package against its machine-readable manifest",
+    )
+    ingestion_audit.add_argument("manifest", help="Vault-relative JSON ingestion manifest")
+    ingestion_audit.add_argument("--json", action="store_true", help="Emit machine-readable findings")
+    ingestion_audit.set_defaults(func=command_ingestion_audit)
+
+    hooks_check = sub.add_parser("hooks-check", help="Verify hook discovery files for a Codex project root")
+    hooks_check.add_argument("--project-root", help="Project root Codex opens; defaults to the vault root")
+    hooks_check.set_defaults(func=command_hooks_check)
     return root_parser
 
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Agentic Second Brain"
+  short_description: "Global memory, delegation, and verification"
+  default_prompt: "Use $agentic-second-brain to complete this task with relevant memory, bounded delegation, and a verified closeout."
+policy:
+  allow_implicit_invocation: true

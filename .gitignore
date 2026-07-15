@@ -51,6 +51,23 @@ models/
 .gemini/
 .agent-cache/
 
+# Private live memory. Existing tracked examples remain available in the public template.
+# New personal notes, sources, project memories, and generated synthesis stay untracked.
+01_Daily/*.md
+02_Working-Memory/*.md
+03_Projects/**
+04_Knowledge/**
+05_Episodic-Memory/**
+06_Procedural-Memory/**
+07_Sources/**
+08_Machine/**
+09_Archive/**
+
+# Keep the public integrity example while the live manifest remains private.
+!08_Machine/
+!08_Machine/Reports/
+!08_Machine/Reports/source-integrity.example.json
+
 # Track reviewed project-local Codex integration; ignore runtime hook state.
 .codex/*
 !.codex/README.md

@@ -18,6 +18,10 @@ class CodexHooksTest(unittest.TestCase):
         self.assertIn("project-ingestion", hook.matched_workflows("Ingest this project without modifying it"))
         self.assertIn("llm-session-summary", hook.matched_workflows("Summarize this LLM session into memory"))
         self.assertIn("dreaming-nightly-synthesis", hook.matched_workflows("Run dreaming synthesis on the last 7 days"))
+        full_ingestion = hook.matched_workflows("Ingest all available Codex tasks and chat history")
+        self.assertIn("full-codex-task-ingestion", full_ingestion)
+        self.assertIn("llm-session-summary", full_ingestion)
+        self.assertIn("transcript-ingestion", full_ingestion)
 
     def test_blocks_secret_like_prompts(self) -> None:
         synthetic_key = "sk-" + ("a" * 22)
@@ -44,6 +48,10 @@ class CodexHooksTest(unittest.TestCase):
         self.assertIsNotNone(hook.destructive_reason("apply_patch", patch))
         add = "*** Begin Patch\n*** Add File: 07_Sources/Articles/new-source.md\n+source\n*** End Patch"
         self.assertIsNone(hook.destructive_reason("apply_patch", add))
+
+    def test_global_handler_uses_private_runtime(self) -> None:
+        self.assertTrue(callable(hook.brain_runtime.record_hook_event))
+        self.assertTrue(callable(hook.brain_runtime.search_memory))
 
 
 if __name__ == "__main__":

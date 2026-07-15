@@ -24,6 +24,18 @@ status: active
 - [ ] Contradictions remain proposals pending review
 - [ ] Git diff is small, readable, and free of caches/credentials
 
+## Full task-history ingestion
+
+- [ ] Discovery manifest lists every project, task ID, task status, and exact turn count
+- [ ] Manifest task and turn totals reconcile exactly
+- [ ] Every task has one evidence-based episodic note containing its task ID
+- [ ] Every project has the complete twelve-file project-memory package
+- [ ] Project claims link to session evidence and historical claims are not presented as current state
+- [ ] Context packs and briefs exist for every project and state freshness
+- [ ] No empty headings, blank bullets, weak placeholders, secrets, emojis, or long dashes remain
+- [ ] Private imported paths are absent from public Git status
+- [ ] `ingestion-audit`, vault validation, tests, and style checks pass
+
 ## Governance changes
 
 - [ ] [[agent-core]] changed first

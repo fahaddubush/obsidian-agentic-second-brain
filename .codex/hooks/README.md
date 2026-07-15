@@ -22,4 +22,4 @@ Human-governed. AI may modify handlers only under an explicit implementation req
 
 ## Runtime state
 
-The handler stores only session identifiers, timestamps, routed workflow names, and dirty/validation flags under ignored `.codex/state/`. It never stores prompt bodies, assistant messages, tool output, or transcript contents.
+Project validation flags remain under ignored `.codex/state/`. Global lifecycle evidence is redacted and appended to the private SQLite journal at `~/.codex/second-brain/brain.db`, outside the public repository. The handler queues idempotent work; semantic extraction is performed later by the reviewed reconciliation workflow.

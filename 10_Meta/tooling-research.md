@@ -2,7 +2,7 @@
 title: Verified Tooling Research
 type: research
 status: active
-researched_on: 2026-07-13
+researched_on: 2026-07-15
 human_review_required: true
 ---
 
@@ -13,6 +13,18 @@ This is a dated evaluation, not an installation manifest. Re-check releases, per
 ## Recommended baseline
 
 Use Obsidian, its core Search/Backlinks/Outgoing Links/Graph View, a private Git repository, and direct filesystem access from Codex, Claude Code, and Gemini CLI. Add one retrieval or agent layer only after the plain wiki shows a measured need.
+
+## Agentic memory patterns adopted
+
+| Project | Pattern used here |
+|---|---|
+| [Letta](https://github.com/letta-ai/letta) | Treat memory as durable agent state, not as a final-turn summary. |
+| [Mem0](https://github.com/mem0ai/mem0) | Separate extraction, update decisions, retrieval, and evaluation. |
+| [Graphiti](https://github.com/getzep/graphiti) | Preserve temporal evidence and make indexes rebuildable from source records. |
+| [LangMem](https://github.com/langchain-ai/langmem) | Run semantic consolidation asynchronously instead of blocking every interaction. |
+| [Khoj](https://github.com/khoj-ai/khoj) | Keep personal retrieval local-first and expose it through explicit agent tools. |
+
+This vault combines those patterns as an append-only private journal, durable queue, ranked Markdown retrieval, typed Obsidian projection, receipts, retries, validation, and bounded specialist agents. Hooks collect evidence; they do not pretend to perform semantic reasoning.
 
 ## Real and dependable
 

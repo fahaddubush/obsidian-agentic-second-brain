@@ -16,7 +16,7 @@ status: active
 | Knowledge quality | [[../12_Workflows/link-suggestion]], [[../12_Workflows/contradiction-detection]], [[../12_Workflows/stale-note-detection]] |
 | Synthesis | [[../12_Workflows/dreaming-nightly-synthesis]] |
 | Life areas | [[../12_Workflows/exam-course-study]], [[../12_Workflows/coop-job-application]] |
-| Agent continuity | [[../12_Workflows/llm-session-summary]], [[../12_Workflows/context-pack-refresh]], [[../12_Workflows/token-saving-brief-generation]] |
+| Agent continuity | [[../12_Workflows/agentic-memory-reconciliation]], [[../12_Workflows/full-codex-task-ingestion]], [[../12_Workflows/llm-session-summary]], [[../12_Workflows/context-pack-refresh]], [[../12_Workflows/token-saving-brief-generation]] |
 | Governance | [[../12_Workflows/agent-instruction-sync]] |
 
 Run workflows manually by default. Automation proposals must preserve human notes and write review artifacts rather than applying silent edits.

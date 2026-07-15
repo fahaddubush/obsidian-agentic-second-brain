@@ -26,9 +26,16 @@ Humans govern this integration. AI may update it only when explicitly requested;
 
 ## Activate
 
-1. Start a new Codex task from this vault root.
-2. Open `/hooks` or the Hooks section in Codex settings.
-3. Review the project-local definitions and trust them.
-4. Confirm the project itself is trusted; untrusted projects do not load local hooks.
+Codex discovers project hooks from the active Codex project root. If Codex opens `Project #3`, it will not discover this nested `.codex` directory by itself. This workspace therefore has a local adapter at `Project #3/.codex` that points back to this reviewed handler.
+
+1. Close existing tasks that were opened before the adapter existed.
+2. Restart Codex so project configuration is rescanned.
+3. Open a new task using `C:\Users\slopp\Desktop\Projects\Project #3` as the project.
+4. Run `python second-brain\scripts\sb.py hooks-check --project-root "."` from the parent project terminal.
+5. Open Settings, then Hooks.
+6. Review and trust the project-local definitions.
+7. Start one more new task if Codex requests it after trust is granted.
+
+Alternatively, add `C:\Users\slopp\Desktop\Projects\Project #3\second-brain` as its own Codex project and use the repository-local hook files directly.
 
 Never use `--dangerously-bypass-hook-trust` for normal work.

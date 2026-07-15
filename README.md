@@ -42,7 +42,7 @@
       Daily notes, decisions, sources, project audits, sessions, context packs, briefs, synthesis, and reviews.
     </td>
     <td width="25%" valign="top">
-      <strong>24 workflows</strong><br><br>
+      <strong>26 workflows</strong><br><br>
       Research, ingestion, architecture, debugging, Git review, study, job applications, dreaming, and maintenance.
     </td>
     <td width="25%" valign="top">
@@ -55,8 +55,8 @@
 <table>
   <tr>
     <td width="33%" align="center"><strong>0 runtime dependencies</strong><br><sub>Python standard library only</sub></td>
-    <td width="33%" align="center"><strong>16 regression tests</strong><br><sub>Windows and Linux CI</sub></td>
-    <td width="33%" align="center"><strong>6 lifecycle hooks</strong><br><sub>Explicitly reviewed and trusted</sub></td>
+    <td width="33%" align="center"><strong>25 regression tests</strong><br><sub>Windows and Linux CI</sub></td>
+    <td width="33%" align="center"><strong>9 lifecycle event types</strong><br><sub>Explicitly reviewed and trusted</sub></td>
   </tr>
 </table>
 
@@ -97,6 +97,8 @@ It combines:
 - Embedded HTML and an optional CSS layer for expressive, visually distinct notes.
 - A canonical instruction core shared by multiple coding agents.
 - Deterministic Codex lifecycle hooks with explicit trust and safety boundaries.
+- A private SQLite evidence journal with idempotent events, durable jobs, retries, dead-letter state, and ranked full-text retrieval.
+- Native Codex local memories, a global orchestration skill, and bounded researcher, curator, and verifier agents.
 - A zero-dependency Python CLI for validation, scaffolding, integrity checks, and audits.
 - Templates and workflows for research, coding sessions, decisions, projects, sources, reviews, and synthesis.
 
@@ -187,9 +189,11 @@ python -m unittest discover -s tests -v
 ├── 09_Archive/               retained inactive material
 ├── 10_Meta/                  policies and schema
 ├── 11_Templates/             19 note templates
-├── 12_Workflows/             24 operating workflows
+├── 12_Workflows/             26 operating workflows
 ├── .codex/                   reviewed Codex lifecycle hooks
 ├── .obsidian/                presentation configuration
+├── codex-agents/             bounded global specialist definitions
+├── skills/                   reusable agentic-brain orchestration skill
 ├── scripts/                  zero-dependency automation CLI
 └── tests/                    regression tests
 ```
@@ -240,6 +244,31 @@ To activate them:
 
 Hooks are guardrails, not a security sandbox. Changed definitions must be reviewed again. See the [automation policy](10_Meta/automation-and-hooks.md).
 
+### Global Codex memory
+
+Project hooks protect the vault itself. The optional user-level installer makes the memory agent available from every Codex task, including tasks opened from other repositories:
+
+```powershell
+python scripts/install_global_codex.py install
+python scripts/install_global_codex.py check
+```
+
+The installer safely merges seven user-level events into `~/.codex/hooks.json`, enables Codex local memories and multi-agent support, installs the `agentic-second-brain` skill and three bounded custom agents, initializes a private SQLite runtime under `~/.codex/second-brain/`, adds this vault as an additional workspace-write root, and places a clearly marked policy block in `~/.codex/AGENTS.md`. It preserves unrelated global hooks and guidance, creates first-install backups, and is safe to run again.
+
+Global behavior is deliberately scoped:
+
+| Event | Global behavior |
+|---|---|
+| `SessionStart` | Register the task in the private journal and load the global brain policy. |
+| `UserPromptSubmit` | Redact and journal the prompt, route workflows, and retrieve ranked relevant memory automatically. |
+| `SubagentStart` and `SubagentStop` | Apply the same privacy contract and preserve delegated evidence. |
+| `PreCompact` and `PostCompact` | Checkpoint lifecycle state around context compaction. |
+| `Stop` | Append the verified assistant outcome and enqueue an idempotent ingestion job without creating a continuation loop. |
+
+Hooks stay fast and deterministic. Semantic extraction, deduplication, temporal updates, and memory promotion are performed by Codex through the orchestration skill and scheduled reconciliation workflow. This separation keeps integrity work deterministic while leaving judgment to an agent with evidence and verifier support.
+
+After installation, restart Codex, open **Settings -> Hooks** or `/hooks`, inspect `C:\Users\<you>\.codex\hooks.json`, and trust the exact definitions. User-level hooks apply independently of project trust. Ordinary ChatGPT web conversations cannot execute local Codex hooks; this integration applies to Codex tasks in the desktop app, CLI, and other Codex surfaces that load the user configuration.
+
 ## Automation CLI
 
 ```bash
@@ -255,6 +284,19 @@ python scripts/sb.py daily --missing-only
 # Create an evidence-based LLM session summary
 python scripts/sb.py session --agent Codex --title "Generated title"
 
+# Install or verify global Codex integration
+python scripts/install_global_codex.py install
+python scripts/install_global_codex.py check
+
+# Search curated memory with the private full-text index
+python scripts/brain_runtime.py search "current project architecture" --json
+
+# Inspect and repair deterministic runtime health
+python scripts/brain_runtime.py doctor --repair --json
+
+# Claim queued evidence for an agentic reconciliation run
+python scripts/brain_runtime.py claim --limit 20 --json
+
 # Inspect a codebase and create memory without modifying the source project
 python scripts/sb.py project-ingest "/path/to/project"
 
@@ -268,7 +310,7 @@ Full behavior and write boundaries are documented in [`scripts/README.md`](scrip
 
 ## Included workflows
 
-The 24 reviewed workflows cover:
+The 26 reviewed workflows cover:
 
 - Daily startup and shutdown
 - Inbox processing
@@ -276,6 +318,7 @@ The 24 reviewed workflows cover:
 - Bug investigation and Git diff review
 - Research and source digestion
 - Transcript and LLM-session memory
+- Incremental agentic memory reconciliation with receipts and retries
 - Decision logging
 - Link, contradiction, and stale-note detection
 - Nightly synthesis, weekly review, and monthly review
@@ -312,7 +355,7 @@ The repository ships with cross-platform GitHub Actions and local tests covering
 Run the complete local gate:
 
 ```bash
-python -m py_compile scripts/vaultlib.py scripts/sb.py .codex/hooks/codex_hook.py
+python -m py_compile scripts/vaultlib.py scripts/sb.py scripts/brain_runtime.py scripts/install_global_codex.py .codex/hooks/codex_hook.py
 python -m unittest discover -s tests -v
 python scripts/sb.py validate
 python scripts/sb.py instruction-sync
@@ -327,6 +370,7 @@ The default stack deliberately stays small. Add tools only when the vault demons
 |---|---|
 | Live Obsidian commands/state | Local REST API with its built-in MCP, loopback only |
 | Larger-scale local retrieval | One measured search layer such as QMD |
+| ChatGPT web access to the vault | An authenticated remote MCP app, explicitly added to the chat |
 | Related-note discovery | One reviewed semantic-linking plugin |
 | Calendar automation | Narrow Codex scheduled tasks with explicit times and permissions |
 

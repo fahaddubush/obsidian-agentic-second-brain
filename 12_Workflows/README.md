@@ -8,4 +8,6 @@
 
 **Writers:** Both; AI may propose changes, and humans approve risky automation.
 
-**Examples:** `project-ingestion.md`, `weekly-review.md`.
+**Examples:** `project-ingestion.md`, `agentic-memory-reconciliation.md`, `full-codex-task-ingestion.md`, `weekly-review.md`.
+
+`agentic-memory-reconciliation.md` handles incremental jobs created by global lifecycle hooks. `full-codex-task-ingestion.md` is the separate, explicit historical backfill for all available Codex tasks. They are complementary and must not be merged into one ambiguous workflow.
